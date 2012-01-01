@@ -1,0 +1,3 @@
+import ping
+
+RECORD_INTERVAL_SECS = 30
