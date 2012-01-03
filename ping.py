@@ -102,7 +102,7 @@ def to_ip(addr):
 
 
 class Ping(object):
-    def __init__(self, destination, timeout=1000, packet_size=55, own_id=None):
+    def __init__(self, destination, timeout=1000, packet_size=55, own_id=None, print_stats=True):
         self.destination = destination
         self.timeout = timeout
         self.packet_size = packet_size
@@ -110,6 +110,8 @@ class Ping(object):
             self.own_id = os.getpid() & 0xFFFF
         else:
             self.own_id = own_id
+
+        self.print_stats = print_stats
 
         try:
             # FIXME: Use destination only for display this line here? see: https://github.com/jedie/python-ping/issues/3
@@ -129,7 +131,8 @@ class Ping(object):
     #--------------------------------------------------------------------------
 
     def print_start(self):
-        print("\nPYTHON-PING %s (%s): %d data bytes" % (self.destination, self.dest_ip, self.packet_size))
+        if self.print_stats:
+            print("\nPYTHON-PING %s (%s): %d data bytes" % (self.destination, self.dest_ip, self.packet_size))
 
     def print_unknown_host(self, e):
         print("\nPYTHON-PING: Unknown host: %s (%s)\n" % (self.destination, e.args[1]))
@@ -151,6 +154,9 @@ class Ping(object):
         print("Request timed out.")
 
     def print_exit(self):
+        if not self.print_stats:
+            return
+
         print("\n----%s PYTHON PING Statistics----" % (self.destination))
 
         lost_count = self.send_count - self.receive_count
